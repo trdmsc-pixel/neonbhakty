@@ -1,21 +1,13 @@
 import ProductInfo from '@/components/ProductInfo';
 import ProductGrid from '@/components/ProductGrid';
-import { demoProducts } from '@/lib/demo-data';
-import { shopifyFetch, isShopifyConfigured } from '@/lib/shopify';
-import { PRODUCT_BY_HANDLE_QUERY } from '@/lib/queries';
+import { getProductByHandle, getAllProducts } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
-async function getProduct(handle) {
-  if (isShopifyConfigured) {
-    const data = await shopifyFetch(PRODUCT_BY_HANDLE_QUERY, { handle });
-    if (data?.product) return data.product;
-  }
-  return demoProducts.find(p => p.handle === handle) || null;
-}
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { handle } = await params;
-  const product = await getProduct(handle);
+  const product = await getProductByHandle(handle);
   if (!product) return { title: 'Product Not Found' };
   return {
     title: `${product.title} — BHAKTY LIFE`,
@@ -25,23 +17,26 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductPage({ params }) {
   const { handle } = await params;
-  const product = await getProduct(handle);
+  const product = await getProductByHandle(handle);
   if (!product) notFound();
 
-  const relatedProducts = demoProducts.filter(p => p.handle !== handle).slice(0, 4);
+  const allProducts = await getAllProducts();
+  const relatedProducts = allProducts.filter(p => p.handle !== handle).slice(0, 4);
 
   return (
     <>
       <ProductInfo product={product} />
 
-      <section className="section-padding">
-        <div className="container">
-          <div className="section-title">
-            <h2 className="section-title__heading neon-text">You May Also Like</h2>
+      {relatedProducts.length > 0 && (
+        <section className="section-padding">
+          <div className="container">
+            <div className="section-title">
+              <h2 className="section-title__heading neon-text">You May Also Like</h2>
+            </div>
+            <ProductGrid products={relatedProducts} columns={4} />
           </div>
-          <ProductGrid products={relatedProducts} columns={4} />
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

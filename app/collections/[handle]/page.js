@@ -1,17 +1,8 @@
 import ProductGrid from '@/components/ProductGrid';
-import { demoCollections } from '@/lib/demo-data';
-import { shopifyFetch, isShopifyConfigured } from '@/lib/shopify';
-import { COLLECTION_BY_HANDLE_QUERY } from '@/lib/queries';
+import { getCollection } from '@/lib/data';
 import { notFound } from 'next/navigation';
 
-async function getCollection(handle) {
-  if (isShopifyConfigured) {
-    const data = await shopifyFetch(COLLECTION_BY_HANDLE_QUERY, { handle, first: 50 });
-    if (data?.collection) return data.collection;
-  }
-  const col = demoCollections.find(c => c.handle === handle);
-  return col || null;
-}
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { handle } = await params;

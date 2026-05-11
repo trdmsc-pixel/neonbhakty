@@ -4,24 +4,23 @@ import ImageWithText from '@/components/ImageWithText';
 import Newsletter from '@/components/Newsletter';
 import { ArrowRight } from '@/components/Icons';
 import Link from 'next/link';
-import { demoProducts, demoSlides, demoCollections } from '@/lib/demo-data';
-import { shopifyFetch, isShopifyConfigured } from '@/lib/shopify';
-import { PRODUCTS_QUERY } from '@/lib/queries';
+import { getAllProducts, getHeroSlides } from '@/lib/data';
 
-async function getProducts() {
-  if (isShopifyConfigured) {
-    const data = await shopifyFetch(PRODUCTS_QUERY, { first: 20 });
-    if (data?.products?.edges) return data.products.edges.map(e => e.node);
-  }
-  return demoProducts;
-}
+export const revalidate = 60; // Revalidate every 60 seconds
 
 export default async function HomePage() {
-  const products = await getProducts();
+  const [products, slides] = await Promise.all([
+    getAllProducts(),
+    getHeroSlides(),
+  ]);
+
+  const dealsProducts = products.filter(p =>
+    parseFloat(p.compareAtPriceRange?.minVariantPrice?.amount || 0) > 0
+  );
 
   return (
     <>
-      <HeroSlideshow slides={demoSlides} />
+      <HeroSlideshow slides={slides} />
 
       {/* Featured Collection: Latest Drops */}
       <section className="section-padding" data-animate="true">
@@ -50,15 +49,17 @@ export default async function HomePage() {
       />
 
       {/* Crazy Deals */}
-      <section className="section-padding" data-animate="true">
-        <div className="container">
-          <div className="section-title">
-            <h2 className="section-title__heading neon-text">Crazy Deals</h2>
-            <p className="section-title__sub">Sacred savings you don&apos;t want to miss</p>
+      {dealsProducts.length > 0 && (
+        <section className="section-padding" data-animate="true">
+          <div className="container">
+            <div className="section-title">
+              <h2 className="section-title__heading neon-text">Crazy Deals</h2>
+              <p className="section-title__sub">Sacred savings you don&apos;t want to miss</p>
+            </div>
+            <ProductGrid products={dealsProducts.slice(0, 4)} columns={4} />
           </div>
-          <ProductGrid products={products.filter(p => parseFloat(p.compareAtPriceRange?.minVariantPrice?.amount || 0) > 0).slice(0, 4)} columns={4} />
-        </div>
-      </section>
+        </section>
+      )}
 
       <Newsletter />
     </>
