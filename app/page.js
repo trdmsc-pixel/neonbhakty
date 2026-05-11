@@ -1,66 +1,66 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import HeroSlideshow from '@/components/HeroSlideshow';
+import ProductGrid from '@/components/ProductGrid';
+import ImageWithText from '@/components/ImageWithText';
+import Newsletter from '@/components/Newsletter';
+import { ArrowRight } from '@/components/Icons';
+import Link from 'next/link';
+import { demoProducts, demoSlides, demoCollections } from '@/lib/demo-data';
+import { shopifyFetch, isShopifyConfigured } from '@/lib/shopify';
+import { PRODUCTS_QUERY } from '@/lib/queries';
 
-export default function Home() {
+async function getProducts() {
+  if (isShopifyConfigured) {
+    const data = await shopifyFetch(PRODUCTS_QUERY, { first: 20 });
+    if (data?.products?.edges) return data.products.edges.map(e => e.node);
+  }
+  return demoProducts;
+}
+
+export default async function HomePage() {
+  const products = await getProducts();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <HeroSlideshow slides={demoSlides} />
+
+      {/* Featured Collection: Latest Drops */}
+      <section className="section-padding" data-animate="true">
+        <div className="container">
+          <div className="section-title">
+            <h2 className="section-title__heading neon-text">Latest Drops</h2>
+            <p className="section-title__sub">Fresh from the divine workshop</p>
+          </div>
+          <ProductGrid products={products.slice(0, 8)} />
+          <div style={{ textAlign: 'center', marginTop: 'clamp(24px,4vw,40px)' }}>
+            <Link href="/collections/t-shirts" className="btn btn--secondary btn--glow">
+              View All <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <ImageWithText
+        subheading="Our Story"
+        heading="Born in Devotion"
+        text="Bhakty Life is a sacred streetwear brand rooted in devotion. Every piece carries the essence of ancient wisdom, reimagined for the modern soul. We believe fashion can be a form of worship — a daily reminder to wear your devotion."
+        buttonText="About Us"
+        buttonLink="#"
+        imageUrl="https://placehold.co/800x600/12121a/00f0ff?text=BORN+IN+DEVOTION"
+        imagePosition="left"
+      />
+
+      {/* Crazy Deals */}
+      <section className="section-padding" data-animate="true">
+        <div className="container">
+          <div className="section-title">
+            <h2 className="section-title__heading neon-text">Crazy Deals</h2>
+            <p className="section-title__sub">Sacred savings you don&apos;t want to miss</p>
+          </div>
+          <ProductGrid products={products.filter(p => parseFloat(p.compareAtPriceRange?.minVariantPrice?.amount || 0) > 0).slice(0, 4)} columns={4} />
         </div>
-      </main>
-    </div>
+      </section>
+
+      <Newsletter />
+    </>
   );
 }

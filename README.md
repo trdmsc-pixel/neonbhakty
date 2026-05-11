@@ -1,36 +1,54 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BHAKTY NEON — Next.js Headless Storefront
 
-## Getting Started
+A premium dark gaming aesthetic storefront for **BHAKTY LIFE** sacred streetwear.
 
-First, run the development server:
+Built with Next.js 14, featuring glassmorphism, neon glow effects, jelly animations, and fully customizable product cards.
+
+## 🚀 Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🎨 Customize
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `lib/config.js` to change:
+- **Product card sizes & aspect ratios**
+- **Colors** (neon primary, secondary, accent)
+- **Effects** (glow intensity, scanlines, cursor glow)
+- **Typography** (Orbitron + Inter by default)
+- **Slideshow** settings
+- **Badge** styles
 
-## Learn More
+## 🔗 Connect Shopify
 
-To learn more about Next.js, take a look at the following resources:
+1. In Shopify Admin → Settings → Apps → Develop apps
+2. Create a custom app with Storefront API access
+3. Add to `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Without Shopify credentials, the site uses built-in demo data.
 
-## Deploy on Vercel
+## 🌐 Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push to GitHub
+2. Go to [vercel.com](https://vercel.com) → Import project
+3. Add environment variables
+4. Deploy!
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Structure
+
+```
+app/          → Pages (Home, Collection, Product, Cart, 404)
+components/   → React components (Header, Footer, ProductCard, etc.)
+lib/          → API client, queries, config, demo data
+```
+
+## Built by [Antigravity AI](https://github.com/trdmsc-pixel/neonbhakty)
