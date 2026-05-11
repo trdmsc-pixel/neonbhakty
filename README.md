@@ -52,3 +52,4 @@ lib/          → API client, queries, config, demo data
 ```
 
 ## Built by [Antigravity AI](https://github.com/trdmsc-pixel/neonbhakty)
+
